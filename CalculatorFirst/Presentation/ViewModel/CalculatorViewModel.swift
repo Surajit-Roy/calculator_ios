@@ -71,8 +71,15 @@ class CalculatorViewModel {
 
     // Check if the last character is an invalid operator or just '%' or '.'
     private func isInvalidEnding(_ expression: String) -> Bool {
-        let invalidEndings = ["%", ".", "+", "-", "*", "/"]
-        return invalidEndings.contains(String(expression.last!))
+        let invalidEndings = [".", "+", "-", "*", "/"]
+        if invalidEndings.contains(String(expression.last!)) { return true }
+        
+        if expression.last == "%" {
+            // Allow cases like "40*10%" but not "%" alone
+            return expression.count == 1 || "+-*/".contains(expression[expression.index(before: expression.endIndex)])
+        }
+        
+        return false
     }
 
     private func appendSymbol(_ action: ButtonAction) {
