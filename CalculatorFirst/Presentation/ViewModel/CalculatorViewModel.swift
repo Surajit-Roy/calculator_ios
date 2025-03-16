@@ -14,6 +14,7 @@ class CalculatorViewModel {
     
     var onExpressionUpdate: ((String) -> Void)?
     var onResultUpdate: ((String) -> Void)?
+    private var isResultDisplayed: Bool = false
     
     private var expression: String = "" {
         didSet {
@@ -66,7 +67,9 @@ class CalculatorViewModel {
             onResultUpdate?("\(result)")
         } else {
             onResultUpdate?("Error")
+            return
         }
+        isResultDisplayed = true  // Mark that a result has been displayed
     }
 
     // Check if the last character is an invalid operator or just '%' or '.'
@@ -83,7 +86,21 @@ class CalculatorViewModel {
     }
 
     private func appendSymbol(_ action: ButtonAction) {
-        expression += mapButtonToSymbol(action)
+        let newSymbol = mapButtonToSymbol(action)
+        
+        // If a result was displayed and user enters a number, start fresh
+        if isResultDisplayed, "+-*/%".contains(newSymbol) == false {
+            expression = ""
+        }
+        
+        isResultDisplayed = false  // Reset flag when appending a new symbol
+
+        // Prevent multiple consecutive operators (keep the last one)
+        if let lastChar = expression.last, "+-*/%".contains(lastChar), "+-*/%".contains(newSymbol) {
+            expression.removeLast()
+        }
+
+        expression += newSymbol
     }
 
     private func mapButtonToSymbol(_ action: ButtonAction) -> String {
