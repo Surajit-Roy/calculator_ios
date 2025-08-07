@@ -21,6 +21,10 @@ class CalculatorViewController: UIViewController {
         viewModel = DICalculatorContainer.shared.makeCalculatorViewModel()
         setupBindings()
         setupButtons()
+        
+        inputField.inputView = UIView() // empty view disables keyboard
+        inputField.becomeFirstResponder()   // show cursor immediately
+        inputField.tintColor = .black
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -61,5 +65,16 @@ class CalculatorViewController: UIViewController {
         if let action = ButtonAction(rawValue: sender.tag) {
             viewModel.handleButtonTap(action)
         }
+    }
+}
+
+class HideKeyboard: UITextField {
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override var inputView: UIView? {
+        get {UIView()}
+        set {}
     }
 }
